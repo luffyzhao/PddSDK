@@ -47,9 +47,10 @@ class Client
      */
     public function handle(array $data){
         $query = $this->splicing($data);
-        return new Responses($this->guzzleHttp->post('/api/router', [
+        $response = $this->guzzleHttp->post('/api/router', [
             'form_params' => $query
-        ]));
+        ]);
+        return new Responses($response);
     }
 
     /**

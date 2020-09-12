@@ -55,6 +55,6 @@ class OrderNumberListIncrementGet
      */
     public function getList(): array
     {
-        return $this->toArray();
+        return $this->toArray()['order_sn_increment_get_response'];
     }
 }

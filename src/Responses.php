@@ -4,7 +4,10 @@
 namespace LPddSDK;
 
 
+use Exception;
+use GuzzleHttp\Exception\InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 class Responses
 {
@@ -36,11 +39,19 @@ class Responses
      */
     public function toArray(): array
     {
+        $contents = (string)$this->response->getBody()->getContents();
         try {
-            return \GuzzleHttp\json_decode($this->response->getBody()->getContents(), true);
-        } catch (\Exception $response) {
-            var_dump($this->response->getBody()->getContents());
-            return [];
+            if(($data = json_decode($contents, true)) !== null){
+                return $data;
+            }
+            return ['error_response' => ['error_msg' => 'json解析错误']];
+        } catch (Exception | Throwable $exception) {
+            return [
+                'error_response' => [
+                    'error_msg' => $exception->getMessage(),
+                    'sub_msg' => $contents
+                ]
+            ];
         }
     }
 }
