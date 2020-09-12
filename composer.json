@@ -1,0 +1,19 @@
+{
+    "name": "luffyzhao/pdd-sdk",
+    "description": "拼多多sdk",
+    "authors": [
+        {
+            "name": "Luffy Zhao",
+            "email": "luffyzhao@vip.126.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "LPddSDK\\": "src/"
+        }
+    }
+}
