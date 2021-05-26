@@ -19,7 +19,7 @@ class Client
      * @var float
      * @author luffyzhao@vip.126.com
      */
-    private $timeout = 3.0;
+    private $timeout = 30;
 
     /**
      * @var array
@@ -30,8 +30,7 @@ class Client
         'client_secret' => '',
         'access_token' => '',
         'data_type' => 'JSON',
-        'type' => '',
-        'version' => 'V1'
+        'type' => ''
     ];
     /**
      * @var GuzzleHttp
@@ -53,9 +52,6 @@ class Client
         $this->guzzle = new GuzzleHttp([
             'base_uri' => $this->baseUri,
             'timeout' => $this->timeout,
-            'headers' => [
-                'Content-Type' => 'application/json',
-            ]
         ]);
     }
 
@@ -103,7 +99,8 @@ class Client
      */
     public function handle()
     {
-        $data = new Signer\Md5($this->data);
+        $signer = new Signer\Md5($this->data);
+        $data = $signer->handel();
         return $this->response(
             $this->post($data)
         );
@@ -117,8 +114,20 @@ class Client
      */
     private function post($query)
     {
-        return $this->guzzle->post('/api/router', [
-            'form_params' => $query
+        foreach ($query as &$v){
+            if (is_array($v)) {
+                $v = json_encode($v);
+            } else if ($v === true) {
+                $v = 'true';
+            } else if ($v === false) {
+                $v = 'false';
+            }
+        }
+        return $this->guzzle->request("POST",'/api/router', [
+            'form_params' => $query,
+            'curl' => [
+                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+            ]
         ]);
     }
 
@@ -133,7 +142,6 @@ class Client
         if ($response->getStatusCode() !== 200) {
             throw new Exception(sprintf("接口请求返回StatusCode不正确[%d]", $response->getStatusCode()));
         }
-
         try {
             $body = \GuzzleHttp\json_decode(
                 $response->getBody()->getContents(),

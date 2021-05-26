@@ -1,6 +1,8 @@
 <?php
 namespace LPddSDK\Signer;
 
+use Illuminate\Support\Facades\Log;
+
 class Md5
 {
     /**
@@ -28,9 +30,11 @@ class Md5
         $singArr = $this->data;
         unset($singArr['client_secret']);
         unset($singArr['sing']);
-        $singArr['timestamp'] = time();
+        if(isset($singArr['access_token']) && empty($singArr['access_token'])){
+            unset($singArr['access_token']);
+        }
+        $singArr['timestamp'] = 1622020559;
         $singArr['sing'] = $this->sing($singArr);
-
         return $singArr;
     }
 
