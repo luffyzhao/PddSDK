@@ -5,6 +5,7 @@ namespace LPddSDK;
 use Exception;
 use GuzzleHttp\Client as GuzzleHttp;
 use GuzzleHttp\Exception\InvalidArgumentException;
+use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\ResponseInterface;
 
 class Client
@@ -114,20 +115,8 @@ class Client
      */
     private function post($query)
     {
-        foreach ($query as &$v){
-            if (is_array($v)) {
-                $v = json_encode($v);
-            } else if ($v === true) {
-                $v = 'true';
-            } else if ($v === false) {
-                $v = 'false';
-            }
-        }
-        return $this->guzzle->request("POST",'/api/router', [
-            'form_params' => $query,
-            'curl' => [
-                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
-            ]
+        return $this->guzzle->request("POST", '/api/router', [
+            'json' => $query
         ]);
     }
 

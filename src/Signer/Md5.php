@@ -29,12 +29,12 @@ class Md5
     {
         $singArr = $this->data;
         unset($singArr['client_secret']);
-        unset($singArr['sing']);
+        unset($singArr['sign']);
         if(isset($singArr['access_token']) && empty($singArr['access_token'])){
             unset($singArr['access_token']);
         }
-        $singArr['timestamp'] = 1622020559;
-        $singArr['sing'] = $this->sing($singArr);
+        $singArr['timestamp'] = (string)time();
+        $singArr['sign'] = $this->sing($singArr);
         return $singArr;
     }
 
