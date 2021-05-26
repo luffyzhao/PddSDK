@@ -28,7 +28,7 @@ class Md5
         $singArr = $this->data;
         unset($singArr['client_secret']);
         unset($singArr['sing']);
-
+        $singArr['timestamp'] = time();
         $singArr['sing'] = $this->sing($singArr);
 
         return $singArr;
