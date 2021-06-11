@@ -6,6 +6,7 @@ use Exception;
 use GuzzleHttp\Client as GuzzleHttp;
 use GuzzleHttp\Exception\InvalidArgumentException;
 use Illuminate\Support\Facades\Log;
+use LPddSDK\Exception\ResponseException;
 use Psr\Http\Message\ResponseInterface;
 
 class Client
@@ -138,7 +139,7 @@ class Client
             );
 
             if (isset($body['error_response'])) {
-                throw new Exception(sprintf('接口异常:%s', \GuzzleHttp\json_encode($body['error_response'])));
+                throw new ResponseException($response->getBody(), sprintf('接口异常:%s', \GuzzleHttp\json_encode($body['error_response'])));
             }
 
             return $body;
