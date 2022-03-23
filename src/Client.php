@@ -5,6 +5,7 @@ namespace LPddSDK;
 use Exception;
 use GuzzleHttp\Client as GuzzleHttp;
 use GuzzleHttp\Exception\InvalidArgumentException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use LPddSDK\Exception\ResponseException;
 use Psr\Http\Message\ResponseInterface;
@@ -138,8 +139,8 @@ class Client
                 true
             );
 
-            if (isset($body['error_response'])) {
-                throw new ResponseException($response->getBody(), sprintf('接口异常:%s', \GuzzleHttp\json_encode($body['error_response'])));
+            if (Arr::exists($body, 'error_response')) {
+                throw new ResponseException($response->getBody(), $body['error_response']['sub_msg']);
             }
 
             return $body;
