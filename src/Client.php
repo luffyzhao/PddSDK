@@ -81,6 +81,16 @@ class Client
     }
 
     /**
+     * @param $type
+     * @return $this
+     */
+    public function setDataType($type): self
+    {
+        $this->data['data_type'] = $type;
+        return $this;
+    }
+
+    /**
      * @param $key
      * @param $value
      * @return Client
