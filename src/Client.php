@@ -129,7 +129,7 @@ class Client
         $this->guzzle->post($this->getUri('/api/router'), $query);
 
         if($this->guzzle->error) {
-            throw new \HttpRequestException($this->guzzle->errorMessage);
+            throw new \HttpException($this->guzzle->errorMessage);
         }
 
         return $this->guzzle->response;
