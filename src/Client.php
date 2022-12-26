@@ -150,9 +150,6 @@ class Client
      */
     private function response($response)
     {
-        if(isset($response['error_response'])){
-            return $response['error_response'];
-        }
         return $response;
     }
 }
