@@ -2,6 +2,7 @@
 
 namespace LPddSDK;
 
+use Curl\Curl;
 use Exception;
 use GuzzleHttp\Client as GuzzleHttp;
 use GuzzleHttp\Exception\InvalidArgumentException;
@@ -36,7 +37,7 @@ class Client
         'type' => ''
     ];
     /**
-     * @var GuzzleHttp
+     * @var Curl
      * @author luffyzhao@vip.126.com
      */
     private $guzzle;
@@ -52,10 +53,9 @@ class Client
         $this->data['client_id'] = $clientId;
         $this->data['client_secret'] = $clientSecret;
 
-        $this->guzzle = new GuzzleHttp([
-            'base_uri' => $this->baseUri,
-            'timeout' => $this->timeout,
-        ]);
+        $this->guzzle = new Curl();;
+        $this->guzzle->setDefaultJsonDecoder($assoc = true);
+        $this->guzzle->setHeader('Content-Type', 'application/json');
     }
 
     /**
@@ -121,42 +121,38 @@ class Client
 
     /**
      * @param $query
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @author luffyzhao@vip.126.com
+     * @return null
+     * @throws Exception
      */
     private function post($query)
     {
-        return $this->guzzle->request("POST", '/api/router', [
-            'json' => $query
-        ]);
+        $this->guzzle->post($this->getUri('/api/router'), $query);
+
+        if($this->guzzle->error) {
+            throw new Exception($this->guzzle->errorMessage);
+        }
+
+        return $this->guzzle->response;
     }
 
     /**
-     * @param ResponseInterface $response
-     * @return array|bool|float|int|object|string|null
-     * @throws Exception
-     * @author luffyzhao@vip.126.com
+     * @param $uri
+     * @return string
      */
-    private function response(ResponseInterface $response)
+    private function getUri($uri)
     {
-        if ($response->getStatusCode() !== 200) {
-            throw new Exception(sprintf("接口请求返回StatusCode不正确[%d]", $response->getStatusCode()));
+        return $this->baseUri . $uri;
+    }
+
+    /**
+     * @param $response
+     * @return mixed
+     */
+    private function response($response)
+    {
+        if(isset($response['error_response'])){
+            return $response['error_response'];
         }
-        try {
-            $body = \GuzzleHttp\json_decode(
-                $response->getBody()->getContents(),
-                true
-            );
-
-            if (Arr::exists($body, 'error_response')) {
-                throw new ResponseException($response->getBody(), $body['error_response']['sub_msg']);
-            }
-
-            return $body;
-        } catch (InvalidArgumentException $exception) {
-            throw new Exception(sprintf("参数解析失败: %s", $response->getBody()->getContents()));
-        }
-
+        return $response;
     }
 }

@@ -9,7 +9,8 @@
     ],
     "require": {
         "php": ">=7.1",
-        "guzzlehttp/guzzle": ">=6.0"
+        "guzzlehttp/guzzle": ">=6.0",
+        "php-curl-class/php-curl-class": "^9.12"
     },
     "autoload": {
         "psr-4": {
